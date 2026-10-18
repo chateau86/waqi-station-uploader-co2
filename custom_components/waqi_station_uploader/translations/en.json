@@ -13,6 +13,7 @@
           "longitude": "Longitude",
           "pm25_entity": "PM2.5 sensor",
           "pm10_entity": "PM10 sensor",
+          "co2_entity": "CO2 sensor",
           "temperature_entity": "Temperature sensor",
           "humidity_entity": "Humidity sensor",
           "interval": "Upload interval"
@@ -45,6 +46,7 @@
           "longitude": "Longitude",
           "pm25_entity": "PM2.5 sensor",
           "pm10_entity": "PM10 sensor",
+          "co2_entity": "CO2 sensor",
           "temperature_entity": "Temperature sensor",
           "humidity_entity": "Humidity sensor",
           "interval": "Upload interval"

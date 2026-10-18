@@ -17,6 +17,7 @@ CONF_LATITUDE: Final = "latitude"
 CONF_LONGITUDE: Final = "longitude"
 CONF_INTERVAL: Final = "interval"
 
+CONF_CO2_ENTITY: Final = "co2_entity"
 CONF_PM25_ENTITY: Final = "pm25_entity"
 CONF_PM10_ENTITY: Final = "pm10_entity"
 CONF_TEMPERATURE_ENTITY: Final = "temperature_entity"
@@ -30,6 +31,7 @@ MAX_INTERVAL: Final = 3600
 
 # config key -> (WAQI specie name, WAQI unit)
 SPECIES: Final[dict[str, tuple[str, str]]] = {
+    CONF_CO2_ENTITY: ("co2", "ppm"),
     CONF_PM25_ENTITY: ("pm2.5", "µg/m3"),
     CONF_PM10_ENTITY: ("pm10", "µg/m3"),
     CONF_TEMPERATURE_ENTITY: ("temp", "C"),
