@@ -25,6 +25,7 @@ from .const import (
     CONF_LONGITUDE,
     CONF_PM10_ENTITY,
     CONF_PM25_ENTITY,
+    CONF_CO2_ENTITY,
     CONF_STATION_ID,
     CONF_STATION_NAME,
     CONF_TEMPERATURE_ENTITY,
@@ -41,6 +42,7 @@ from .const import (
 ENTITY_KEYS = (
     CONF_PM25_ENTITY,
     CONF_PM10_ENTITY,
+    CONF_CO2_ENTITY,
     CONF_TEMPERATURE_ENTITY,
     CONF_HUMIDITY_ENTITY,
 )
@@ -64,6 +66,7 @@ def _settings_schema() -> vol.Schema:
             vol.Optional(CONF_LONGITUDE): vol.Coerce(float),
             vol.Required(CONF_PM25_ENTITY): _sensor_selector(SensorDeviceClass.PM25),
             vol.Optional(CONF_PM10_ENTITY): _sensor_selector(SensorDeviceClass.PM10),
+            vol.Optional(CONF_CO2_ENTITY): _sensor_selector(SensorDeviceClass.CO2),
             vol.Optional(CONF_TEMPERATURE_ENTITY): _sensor_selector(
                 SensorDeviceClass.TEMPERATURE
             ),
