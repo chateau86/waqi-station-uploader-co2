@@ -19,6 +19,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import WaqiAuthError, WaqiConnectionError, WaqiError, async_validate_token
 from .const import (
+    CONF_CO2_LIMIT,
     CONF_HUMIDITY_ENTITY,
     CONF_INTERVAL,
     CONF_LATITUDE,
@@ -30,6 +31,7 @@ from .const import (
     CONF_STATION_NAME,
     CONF_TEMPERATURE_ENTITY,
     CONF_TOKEN,
+    DEFAULT_CO2_LIMIT,
     DEFAULT_INTERVAL,
     DEFAULT_STATION_ID,
     DEFAULT_STATION_NAME,
@@ -67,6 +69,16 @@ def _settings_schema() -> vol.Schema:
             vol.Required(CONF_PM25_ENTITY): _sensor_selector(SensorDeviceClass.PM25),
             vol.Optional(CONF_PM10_ENTITY): _sensor_selector(SensorDeviceClass.PM10),
             vol.Optional(CONF_CO2_ENTITY): _sensor_selector(SensorDeviceClass.CO2),
+            vol.Optional(
+                CONF_CO2_LIMIT, default=DEFAULT_CO2_LIMIT
+            ): selector.NumberSelector(
+                selector.NumberSelectorConfig(
+                    min=0,
+                    step=10,
+                    unit_of_measurement="ppm",
+                    mode=selector.NumberSelectorMode.BOX,
+                )
+            ),
             vol.Optional(CONF_TEMPERATURE_ENTITY): _sensor_selector(
                 SensorDeviceClass.TEMPERATURE
             ),
@@ -105,6 +117,7 @@ async def _validate(hass: HomeAssistant, user_input: dict[str, Any]) -> dict[str
 def _normalise(user_input: dict[str, Any]) -> dict[str, Any]:
     options = {k: v for k, v in user_input.items() if v not in (None, "")}
     options[CONF_INTERVAL] = int(options[CONF_INTERVAL])
+    options[CONF_CO2_LIMIT] = int(options.get(CONF_CO2_LIMIT, DEFAULT_CO2_LIMIT))
     return options
 
 
@@ -141,6 +154,7 @@ class WaqiUploaderConfigFlow(ConfigFlow, domain=DOMAIN):
             CONF_LATITUDE: self.hass.config.latitude,
             CONF_LONGITUDE: self.hass.config.longitude,
             CONF_INTERVAL: DEFAULT_INTERVAL,
+            CONF_CO2_LIMIT: DEFAULT_CO2_LIMIT,
         }
         return self.async_show_form(
             step_id="user",
@@ -169,7 +183,10 @@ class WaqiUploaderOptionsFlow(OptionsFlow):
             if not errors:
                 return self.async_create_entry(data=_normalise(user_input))
 
-        suggested = user_input or dict(self.config_entry.options)
+        suggested = user_input or {
+            CONF_CO2_LIMIT: DEFAULT_CO2_LIMIT,
+            **self.config_entry.options,
+        }
         return self.async_show_form(
             step_id="init",
             data_schema=self.add_suggested_values_to_schema(_settings_schema(), suggested),

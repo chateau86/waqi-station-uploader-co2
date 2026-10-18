@@ -16,6 +16,7 @@ CONF_STATION_NAME: Final = "station_name"
 CONF_LATITUDE: Final = "latitude"
 CONF_LONGITUDE: Final = "longitude"
 CONF_INTERVAL: Final = "interval"
+CONF_CO2_LIMIT: Final = "co2_limit"
 
 CONF_CO2_ENTITY: Final = "co2_entity"
 CONF_PM25_ENTITY: Final = "pm25_entity"
@@ -28,6 +29,9 @@ DEFAULT_STATION_NAME: Final = "My Air Quality Station"
 DEFAULT_INTERVAL: Final = 60  # seconds; WAQI recommends 1-minute averages
 MIN_INTERVAL: Final = 60
 MAX_INTERVAL: Final = 3600
+# Skip an upload if any CO2 sample in the window is above this (ppm): high indoor-like CO2
+# suggests a local disturbance near the sensor. 0 disables the check.
+DEFAULT_CO2_LIMIT: Final = 600
 
 # config key -> (WAQI specie name, WAQI unit)
 SPECIES: Final[dict[str, tuple[str, str]]] = {
@@ -42,3 +46,4 @@ STATUS_OK: Final = "ok"
 STATUS_ERROR: Final = "error"
 STATUS_SKIPPED: Final = "skipped"
 STATUS_PENDING: Final = "pending"
+STATUS_INHIBITED: Final = "inhibited"

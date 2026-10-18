@@ -27,6 +27,8 @@ from homeassistant.util.unit_conversion import TemperatureConverter
 
 from .api import WaqiError, async_upload
 from .const import (
+    CONF_CO2_ENTITY,
+    CONF_CO2_LIMIT,
     CONF_INTERVAL,
     CONF_LATITUDE,
     CONF_LONGITUDE,
@@ -34,9 +36,11 @@ from .const import (
     CONF_STATION_NAME,
     CONF_TEMPERATURE_ENTITY,
     CONF_TOKEN,
+    DEFAULT_CO2_LIMIT,
     DEFAULT_INTERVAL,
     SPECIES,
     STATUS_ERROR,
+    STATUS_INHIBITED,
     STATUS_OK,
     STATUS_PENDING,
     STATUS_SKIPPED,
@@ -65,6 +69,7 @@ class WaqiUploader:
         self.latitude: float | None = conf.get(CONF_LATITUDE)
         self.longitude: float | None = conf.get(CONF_LONGITUDE)
         self.interval = timedelta(seconds=int(conf.get(CONF_INTERVAL, DEFAULT_INTERVAL)))
+        self.co2_limit: int = int(conf.get(CONF_CO2_LIMIT, DEFAULT_CO2_LIMIT))
 
         # entity_id -> (config key, specie, unit)
         self._sources: dict[str, tuple[str, str, str]] = {}
@@ -209,6 +214,27 @@ class WaqiUploader:
                 self.last_status = STATUS_SKIPPED
                 self.last_error = "No valid readings from the selected sensors"
                 _LOGGER.debug("Skipping WAQI upload for %s: no readings", self.station_id)
+                self._notify()
+                return
+
+            co2_specie = SPECIES[CONF_CO2_ENTITY][0]
+            # Any single sample over the limit stops the upload; the sensor's own
+            # response already smooths out momentary noise.
+            co2 = next(
+                (r.get("max", r["value"]) for r in readings if r["specie"] == co2_specie),
+                None,
+            )
+            if self.co2_limit and co2 is not None and co2 > self.co2_limit:
+                self.last_status = STATUS_INHIBITED
+                self.last_error = (
+                    f"CO2 reached {co2} ppm, above the {self.co2_limit} ppm limit"
+                )
+                _LOGGER.debug(
+                    "Skipping WAQI upload for %s: CO2 %s ppm above limit %s ppm",
+                    self.station_id,
+                    co2,
+                    self.co2_limit,
+                )
                 self._notify()
                 return
 

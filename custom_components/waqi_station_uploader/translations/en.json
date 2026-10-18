@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "WAQI Station Uploader",
-        "description": "Pick the sensor entities to upload (PM2.5 is required; PM10, temperature and humidity are optional) and enter your WAQI data platform token ({token_url}).",
+        "description": "Pick the sensor entities to upload (PM2.5 is required; PM10, CO2, temperature and humidity are optional) and enter your WAQI data platform token ({token_url}).",
         "data": {
           "station_id": "Station ID",
           "token": "WAQI token",
@@ -14,6 +14,7 @@
           "pm25_entity": "PM2.5 sensor",
           "pm10_entity": "PM10 sensor",
           "co2_entity": "CO2 sensor",
+          "co2_limit": "CO2 upload limit",
           "temperature_entity": "Temperature sensor",
           "humidity_entity": "Humidity sensor",
           "interval": "Upload interval"
@@ -21,6 +22,7 @@
         "data_description": {
           "station_id": "Unique, private ID for this station on WAQI (max 128 characters). Cannot be changed later.",
           "station_name": "Public name shown on the WAQI map.",
+          "co2_limit": "Skip the upload if any CO2 reading in the window is above this value, which suggests a local disturbance near the sensor. Set to 0 to disable.",
           "interval": "Readings are averaged over this window. WAQI recommends 60 seconds."
         }
       }
@@ -47,9 +49,13 @@
           "pm25_entity": "PM2.5 sensor",
           "pm10_entity": "PM10 sensor",
           "co2_entity": "CO2 sensor",
+          "co2_limit": "CO2 upload limit",
           "temperature_entity": "Temperature sensor",
           "humidity_entity": "Humidity sensor",
           "interval": "Upload interval"
+        },
+        "data_description": {
+          "co2_limit": "Skip the upload if any CO2 reading in the window is above this value, which suggests a local disturbance near the sensor. Set to 0 to disable."
         }
       }
     },
@@ -71,7 +77,8 @@
           "pending": "Pending",
           "ok": "OK",
           "error": "Error",
-          "skipped": "Skipped (no data)"
+          "skipped": "Skipped (no data)",
+          "inhibited": "Inhibited (high CO2)"
         }
       },
       "last_upload": { "name": "Last upload" }

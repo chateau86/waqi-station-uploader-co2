@@ -10,7 +10,13 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import STATUS_ERROR, STATUS_OK, STATUS_PENDING, STATUS_SKIPPED
+from .const import (
+    STATUS_ERROR,
+    STATUS_INHIBITED,
+    STATUS_OK,
+    STATUS_PENDING,
+    STATUS_SKIPPED,
+)
 from .entity import WaqiUploaderEntity
 from .uploader import WaqiConfigEntry
 
@@ -34,7 +40,13 @@ class UploadStatusSensor(WaqiUploaderEntity, SensorEntity):
     """Result of the most recent upload attempt."""
 
     _attr_device_class = SensorDeviceClass.ENUM
-    _attr_options = [STATUS_PENDING, STATUS_OK, STATUS_ERROR, STATUS_SKIPPED]
+    _attr_options = [
+        STATUS_PENDING,
+        STATUS_OK,
+        STATUS_ERROR,
+        STATUS_SKIPPED,
+        STATUS_INHIBITED,
+    ]
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
@@ -49,6 +61,7 @@ class UploadStatusSensor(WaqiUploaderEntity, SensorEntity):
             "last_error": self.uploader.last_error,
             "last_readings": self.uploader.last_readings,
             "interval_seconds": int(self.uploader.interval.total_seconds()),
+            "co2_limit": self.uploader.co2_limit,
         }
 
 
